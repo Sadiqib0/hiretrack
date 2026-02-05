@@ -1,0 +1,193 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+  PAST_DUE
+}
+
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String?  // Nullable for Google OAuth users
+  firstName     String?
+  lastName      String?
+  role          UserRole @default(USER)
+  
+  // Google OAuth
+  googleId      String?  @unique
+  picture       String?
+  
+  // Subscription
+  subscriptionTier    SubscriptionTier   @default(FREE)
+  subscriptionStatus  SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId    String?            @unique
+  stripeSubscriptionId String?           @unique
+  subscriptionEndsAt  DateTime?
+  
+  // Metadata
+  emailVerified Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+  
+  // Relations
+  applications  Application[]
+  cvs           CV[]
+  reminders     Reminder[]
+  
+  @@index([email])
+  @@index([googleId])
+  @@index([stripeCustomerId])
+  @@map("users")
+}
+
+model Application {
+  id          String            @id @default(uuid())
+  userId      String
+  
+  // Job Details
+  jobTitle    String
+  company     String
+  location    String?
+  jobUrl      String?
+  salary      String?
+  description String?           @db.Text
+  
+  // Application Details
+  status      ApplicationStatus @default(APPLIED)
+  appliedAt   DateTime          @default(now())
+  
+  // Tracking
+  responseReceivedAt DateTime?
+  interviewDate      DateTime?
+  offerReceivedAt    DateTime?
+  rejectedAt         DateTime?
+  notes              String?    @db.Text
+  
+  // CV Used
+  cvId        String?
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cv          CV?       @relation(fields: [cvId], references: [id])
+  reminders   Reminder[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([appliedAt])
+  @@index([company])
+  @@map("applications")
+}
+
+model CV {
+  id          String   @id @default(uuid())
+  userId      String
+  
+  // CV Details
+  fileName    String
+  fileUrl     String
+  fileSize    Int
+  version     String?  // e.g., "Software Engineer v1", "Data Analyst Resume"
+  
+  // S3 Storage
+  s3Key       String
+  
+  // Metadata
+  isDefault   Boolean  @default(false)
+  uploadedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+  
+  @@index([userId])
+  @@map("cvs")
+}
+
+model Reminder {
+  id              String   @id @default(uuid())
+  userId          String
+  applicationId   String
+  
+  // Reminder Details
+  title           String
+  description     String?
+  reminderDate    DateTime
+  
+  // Status
+  isSent          Boolean  @default(false)
+  sentAt          DateTime?
+  isCompleted     Boolean  @default(false)
+  completedAt     DateTime?
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([reminderDate])
+  @@index([isSent])
+  @@map("reminders")
+}
+
+model Analytics {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime @default(now())
+  
+  // Metrics (snapshot for the day)
+  totalApplications    Int @default(0)
+  appliedCount         Int @default(0)
+  interviewCount       Int @default(0)
+  offerCount           Int @default(0)
+  rejectedCount        Int @default(0)
+  
+  // Rates
+  responseRate         Float @default(0)
+  interviewRate        Float @default(0)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([date])
+  @@map("analytics")
+}
