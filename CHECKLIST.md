@@ -71,17 +71,17 @@
 
 #### Pages 🟡
 - [x] Home/Landing page
-- [ ] Login page (TODO)
-- [ ] Signup page (TODO)
-- [ ] Dashboard (TODO)
+- [x] Login page (TODO)
+- [x] Signup page (TODO)
+- [x] Dashboard (TODO)
 - [ ] Applications list (TODO)
 - [ ] Application details (TODO)
-- [ ] Analytics page (TODO)
-- [ ] Settings page (TODO)
+- [x] Analytics page (TODO)
+- [x] Settings page (TODO)
 - [ ] Subscription page (TODO)
 
 #### Components 🟡
-- [ ] Navbar (TODO)
+- [x] Navbar (TODO)
 - [ ] Sidebar (TODO)
 - [ ] Application card (TODO)
 - [ ] Stats cards (TODO)
