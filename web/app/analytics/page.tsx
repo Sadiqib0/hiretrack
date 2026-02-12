@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/components/Protectedroute';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Navbar } from '@/components/Navbar';
 import { applicationsApi } from '@/lib/api';
 import {

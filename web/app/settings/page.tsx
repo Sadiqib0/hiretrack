@@ -1,11 +1,11 @@
 'use client';
 
-import { ProtectedRoute } from '@/components/Protectedroute';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/lib/auth-context';
 import { User, Bell, Shield, CreditCard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
 export default function SettingsPage() {
   const { user } = useAuth();
