@@ -51,4 +51,5 @@ export const applicationsApi = {
 export const usersApi = {
   getProfile: () => apiClient.get('/users/profile'),
   updateProfile: (data: any) => apiClient.patch('/users/profile', data),
+  updateNotifications: (data: any) => apiClient.patch('/users/notifications', data),
 };

@@ -13,20 +13,35 @@ export class UsersService {
         email: true,
         firstName: true,
         lastName: true,
+        picture: true,
         role: true,
         subscriptionTier: true,
         subscriptionStatus: true,
+        emailVerified: true,
         createdAt: true,
       },
     });
   }
 
   async updateProfile(id: string, data: any) {
+    const updateData: any = {};
+
+    if (data.firstName !== undefined) updateData.firstName = data.firstName;
+    if (data.lastName !== undefined) updateData.lastName = data.lastName;
+    if (data.picture !== undefined) updateData.picture = data.picture;
+
     return this.prisma.user.update({
       where: { id },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        picture: true,
+        role: true,
+        subscriptionTier: true,
+        subscriptionStatus: true,
       },
     });
   }

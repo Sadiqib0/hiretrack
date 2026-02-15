@@ -1,5 +1,7 @@
 'use client';
 
+import { AddReminderModal } from '@/components/applications/AddReminderModal';
+import { Bell } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -14,11 +16,13 @@ export default function ApplicationDetailPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [application, setApplication] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<any>({});
+ 
 
   useEffect(() => {
     if (id) fetchApplication();
@@ -110,25 +114,29 @@ export default function ApplicationDetailPage() {
                     </p>
                   </>
                 )}
-              </div>
+              </div> 
               <div className="flex gap-2">
-                {isEditing ? (
-                  <>
-                    <Button variant="outline" onClick={() => { setIsEditing(false); setFormData(application); }}>Cancel</Button>
-                    <Button variant="primary" onClick={handleSave} isLoading={isSaving}>
-                      <Save className="w-4 h-4 mr-2" />Save Changes
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
-                    <Button variant="outline" onClick={handleDelete} className="text-red-600 border-red-300 hover:bg-red-50">
-                      <Trash2 className="w-4 h-4 mr-2" />Delete
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
+  {isEditing ? (
+    <>
+      <Button variant="outline" onClick={() => { setIsEditing(false); setFormData(application); }}>Cancel</Button>
+      <Button variant="primary" onClick={handleSave} isLoading={isSaving}>
+        <Save className="w-4 h-4 mr-2" />Save Changes
+      </Button>
+    </>
+  ) : (
+    <>
+      <Button variant="outline" onClick={() => setIsReminderModalOpen(true)}>
+        <Bell className="w-4 h-4 mr-2" />Reminder
+      </Button>
+      <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
+      <Button variant="outline" onClick={handleDelete} className="text-red-600 border-red-300 hover:bg-red-50">
+        <Trash2 className="w-4 h-4 mr-2" />Delete
+      </Button>
+    </>
+  )}
+</div>
+              
+         </div>
           </div>
           <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
             <div>
@@ -189,6 +197,16 @@ export default function ApplicationDetailPage() {
           </div>
         </main>
       </div>
+      <AddReminderModal
+          isOpen={isReminderModalOpen}
+          onClose={() => setIsReminderModalOpen(false)}
+          onSuccess={() => {
+            alert('Reminder set successfully!');
+            setIsReminderModalOpen(false);
+          }}
+          applicationId={id}
+          applicationTitle={`${application.jobTitle} at ${application.company}`}
+        />
     </ProtectedRoute>
   );
 }
