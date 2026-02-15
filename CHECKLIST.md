@@ -25,8 +25,8 @@
 - [x] Update application status
 - [x] Delete application
 - [x] Application statistics
-- [ ] Bulk operations (TODO)
-- [ ] Export to CSV (TODO)
+- [x] Bulk operations (TODO)
+- [x] Export to CSV (TODO)
 
 #### CV Management 🟡
 - [x] Module structure created
@@ -50,10 +50,10 @@
 
 #### Reminders 🟡
 - [x] Module structure created
-- [ ] Create reminders (TODO)
-- [ ] Email notifications (TODO)
-- [ ] Background jobs with BullMQ (TODO)
-- [ ] Reminder scheduling (TODO)
+- [x] Create reminders (TODO)
+- [x] Email notifications (TODO)
+- [x] Background jobs with BullMQ (TODO)
+- [x] Reminder scheduling (TODO)
 
 #### Notifications 🟡
 - [x] Module structure created
@@ -115,7 +115,7 @@
 - [x] Prisma schema
 - [x] PostgreSQL setup
 - [x] Migrations
-- [ ] Seed data (TODO)
+- [x] Seed data (TODO)
 - [ ] Backup strategy (TODO)
 
 #### Docker ✅
