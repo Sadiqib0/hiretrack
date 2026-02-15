@@ -35,22 +35,37 @@ export class ApplicationsService {
     });
   }
 
+  // --- FIXED UPDATE FUNCTION ---
   async update(id: string, userId: string, data: any) {
+    // 1. Destructure 'data' to remove fields that Prisma doesn't want to see in the update body.
+    // This specifically removes 'userId' and 'id' which caused your "Unknown argument" error.
+    const { 
+      id: _id, 
+      userId: _userId, 
+      createdAt, 
+      updatedAt, 
+      cv, 
+      reminders, 
+      ...updateData 
+    } = data;
+
     return this.prisma.application.update({
-      where: { id },
+      // 2. Added userId to 'where' for better security
+      where: { id, userId },
       data: {
-        ...data,
-        // Auto-set timestamps based on status
-        ...(data.status === 'INTERVIEW' && !data.interviewDate && { interviewDate: new Date() }),
-        ...(data.status === 'OFFER' && !data.offerReceivedAt && { offerReceivedAt: new Date() }),
-        ...(data.status === 'REJECTED' && !data.rejectedAt && { rejectedAt: new Date() }),
+        ...updateData,
+        // 3. Keep your existing logic for auto-setting timestamps based on status
+        ...(updateData.status === 'INTERVIEW' && !updateData.interviewDate && { interviewDate: new Date() }),
+        ...(updateData.status === 'OFFER' && !updateData.offerReceivedAt && { offerReceivedAt: new Date() }),
+        ...(updateData.status === 'REJECTED' && !updateData.rejectedAt && { rejectedAt: new Date() }),
       },
     });
   }
+  // ------------------------------
 
   async delete(id: string, userId: string) {
     return this.prisma.application.delete({
-      where: { id },
+      where: { id, userId }, // Best practice to include userId here too
     });
   }
 

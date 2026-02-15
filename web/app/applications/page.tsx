@@ -29,8 +29,12 @@ export default function ApplicationsPage() {
     try {
       const response = await applicationsApi.getAll();
       setApplications(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch applications:', error);
+      if (error.response?.status === 401) {
+        // Token expired, redirect to login
+        window.location.href = '/auth/login';
+      }
     } finally {
       setLoading(false);
     }
