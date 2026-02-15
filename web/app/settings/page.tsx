@@ -8,6 +8,7 @@ import { User, Bell, Shield, CreditCard, Save } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { usersApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -36,12 +37,12 @@ export default function SettingsPage() {
     
     try {
       await usersApi.updateProfile(formData);
-      setMessage('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       setIsEditing(false);
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error('Failed to update profile:', error);
-      setMessage('Failed to update profile');
+      toast.error('Failed to update profile');
     } finally {
       setIsSaving(false);
     }

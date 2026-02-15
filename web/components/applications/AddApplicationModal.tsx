@@ -5,6 +5,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { applicationsApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 interface AddApplicationModalProps {
   isOpen: boolean;
@@ -29,9 +30,10 @@ export function AddApplicationModal({ isOpen, onClose, onSuccess }: AddApplicati
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
+  
     try {
       await applicationsApi.create(formData);
+      toast.success('Application added successfully!');
       onSuccess();
       onClose();
       setFormData({

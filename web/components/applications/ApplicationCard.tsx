@@ -6,6 +6,7 @@ import { MapPin, DollarSign, Calendar, ExternalLink, Edit, Trash2, MoreVertical 
 import { Button } from '../ui/Button';
 import { applicationsApi } from '@/lib/api';
 import { clsx } from 'clsx';
+import toast from 'react-hot-toast';
 
 interface Application {
   id: string;
@@ -36,14 +37,18 @@ export function ApplicationCard({ application, onDelete, onUpdate }: Application
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this application?')) return;
+    if (!confirm('Are you sure you want to delete this application?')) {
+      return;
+    }
+  
     setIsDeleting(true);
     try {
       await applicationsApi.delete(application.id);
+      toast.success('Application deleted successfully');
       onDelete();
     } catch (error) {
       console.error('Failed to delete application:', error);
-      alert('Failed to delete application');
+      toast.error('Failed to delete application');
     } finally {
       setIsDeleting(false);
     }
