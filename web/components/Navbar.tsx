@@ -21,6 +21,7 @@ export function Navbar() {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Applications', href: '/applications', icon: FileText },
+    { name: 'CVs', href: '/cvs', icon: FileText },
     { name: 'Reminders', href: '/reminders', icon: Bell },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/settings', icon: Settings },

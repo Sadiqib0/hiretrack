@@ -53,3 +53,21 @@ export const usersApi = {
   updateProfile: (data: any) => apiClient.patch('/users/profile', data),
   updateNotifications: (data: any) => apiClient.patch('/users/notifications', data),
 };
+// CVs API
+export const cvsApi = {
+  upload: (file: File, data?: any) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (data?.version) formData.append('version', data.version);
+    if (data?.isDefault) formData.append('isDefault', data.isDefault);
+    
+    return apiClient.post('/cvs/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  getAll: () => apiClient.get('/cvs'),
+  setDefault: (id: string) => apiClient.patch(`/cvs/${id}/default`),
+  delete: (id: string) => apiClient.delete(`/cvs/${id}`),
+};

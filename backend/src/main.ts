@@ -1,65 +1,56 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import helmet from 'helmet';
 import * as compression from 'compression';
+import helmet from 'helmet';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api'); 
-  // Security
-  app.use(helmet());
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Global prefix
+  app.setGlobalPrefix('api');
+
+  // CORS - IMPORTANT for file uploads
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') || 'http://localhost:3000',
+    origin: 'http://localhost:3000',
     credentials: true,
   });
 
-  // Compression
+  // Security
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
+  
   app.use(compression());
-
+  
   // Validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ 
+    whitelist: true, 
+    transform: true 
+  }));
 
-  // API Prefix
-  app.setGlobalPrefix('api');
+  // Serve static files (uploads)
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads',
+  });
 
-  // Swagger Documentation
+  // Swagger
   const config = new DocumentBuilder()
     .setTitle('HireTrack API')
-    .setDescription('Job Application Tracking Platform API Documentation')
+    .setDescription('Job application tracking API')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management')
-    .addTag('applications', 'Job application tracking')
-    .addTag('cvs', 'CV/Resume management')
-    .addTag('analytics', 'Analytics and insights')
-    .addTag('subscriptions', 'Subscription and payments')
-    .addTag('reminders', 'Reminders and notifications')
     .build();
-
+  
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  });
+  SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-
-  console.log(`
-    🚀 HireTrack API is running on: http://localhost:${port}
-    📚 Swagger Docs: http://localhost:${port}/api/docs
-    🔐 Environment: ${process.env.NODE_ENV}
-  `);
+  console.log(`🚀 HireTrack API is running on: http://localhost:${port}`);
+  console.log(`📁 Uploads directory: ${join(__dirname, '..', 'uploads')}`);
 }
-
 bootstrap();
